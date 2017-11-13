@@ -1,0 +1,8 @@
+# tempfiles
+/tmp
+
+# we don't want iso files in git
+/iso
+
+# OSX shit
+.DS_Store

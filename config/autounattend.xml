@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend"
+          xmlns:ms="urn:schemas-microsoft-com:asm.v3"
+          xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+
+  <!-- keep installed PnP devices -->
+  <settings pass="generalize">
+    <component name="Microsoft-Windows-PnPSysprep"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+      <PersistAllDeviceInstalls>true</PersistAllDeviceInstalls>
+    </component>
+  </settings>
+
+  <settings pass="windowsPE">
+
+    <!-- language -->
+    <component name="Microsoft-Windows-International-Core-WinPE"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+      <SetupUILanguage>
+        <UILanguage>en-US</UILanguage>
+      </SetupUILanguage>
+      <InputLocale>en-US</InputLocale>
+      <UILanguage>en-US</UILanguage>
+      <SystemLocale>en-US</SystemLocale>
+      <UserLocale>en-US</UserLocale>
+    </component>
+
+    <!-- drivers -->
+    <component name="Microsoft-Windows-PnpCustomizationsWinPE"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               processorArchitecture="amd64">
+      <DriverPaths>
+        <PathAndCredentials wcm:action="add" wcm:keyValue="1">
+          <Path>f:\</Path>
+        </PathAndCredentials>
+      </DriverPaths>
+    </component>
+
+    <component name="Microsoft-Windows-Setup"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               processorArchitecture="amd64">
+
+      <!-- accept EULA -->
+      <UserData>
+        <AcceptEula>true</AcceptEula>
+        <ProductKey>
+          <WillShowUI>OnError</WillShowUI>
+          <!-- <Key>INSERT-PRODUCT-KEY-HERE</Key> -->
+        </ProductKey>
+      </UserData>
+
+      <!-- format HDD -->
+      <DiskConfiguration>
+        <WillShowUI>OnError</WillShowUI>
+        <Disk wcm:action="add">
+          <DiskID>0</DiskID>
+          <WillWipeDisk>true</WillWipeDisk>
+          <CreatePartitions>
+            <CreatePartition wcm:action="add">
+              <Order>1</Order>
+              <Extend>true</Extend>
+              <Type>Primary</Type>
+            </CreatePartition>
+          </CreatePartitions>
+          <ModifyPartitions>
+            <ModifyPartition wcm:action="add">
+              <Format>NTFS</Format>
+              <Order>1</Order>
+              <PartitionID>1</PartitionID>
+              <!-- <Label>main</Label> -->
+            </ModifyPartition>
+          </ModifyPartitions>
+        </Disk>
+      </DiskConfiguration>
+
+      <!-- installation mode -->
+      <ImageInstall>
+        <OSImage>
+          <WillShowUI>Never</WillShowUI>
+          <!--
+          <InstallFrom>
+            <MetaData>
+              <Key>/IMAGE/Name</Key>
+              <Value>Windows Server 2012 R2 SERVERSTANDARDCORE</Value>
+            </MetaData>
+          </InstallFrom>
+          -->
+          <InstallTo>
+            <DiskID>0</DiskID>
+            <PartitionID>1</PartitionID>
+          </InstallTo>
+        </OSImage>
+      </ImageInstall>
+
+    </component> <!-- name="Microsoft-Windows-Setup" -->
+
+  </settings> <!-- pass="windowsPE" -->
+
+  <settings pass="specialize">
+
+    <component name="Microsoft-Windows-Shell-Setup"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               processorArchitecture="amd64">
+      <ComputerName>*</ComputerName> <!-- random name -->
+    </component>
+
+<!--
+    <component name="Microsoft-Windows-TerminalServices-LocalSessionManager"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+      <fDenyTSConnections>false</fDenyTSConnections>
+    </component>
+
+    <component name="Microsoft-Windows-TerminalServices-RDP-WinStationExtensions"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+      <UserAuthentication>0</UserAuthentication>
+    </component>
+
+    <component name="Networking-MPSSVC-Svc"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+      <FirewallGroups>
+        <FirewallGroup wcm:action="add" wcm:keyValue="RemoteDesktop">
+          <Active>true</Active>
+          <Profile>all</Profile>
+          <Group>@FirewallAPI.dll,-28752</Group>
+        </FirewallGroup>
+      </FirewallGroups>
+    </component>
+-->
+
+<!--
+for %%i in (%~dp0\vbox_*.cer) do certutil -addstore -f "TrustedPublisher" %%i
+VBoxCertUtil.exe add-trusted-publisher vbox*.cer -\-root vbox*.cer
+for %i in (vbox-*.cer) do VBoxCertUtil.exe add-trusted-publisher %i -\-root %i
+VBoxWindowsAdditions.exe /with_autologon /with_d3d /with_wddm /I /S
+
+    <component name="Microsoft-Windows-Deployment"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+      <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>3</Order>
+          <Path>netsh advfirewall firewall add rule name=ICMP protocol=icmpv4 dir=in action=allow</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <Path>powershell -NoLogo -Command "(new-object System.Net.WebClient).DownloadFile('https://www.cloudbase.it/downloads/CloudbaseInitSetup_Beta_x64.msi', 'c:\Windows\Temp\cloudbase.msi')"</Path>
+        </RunSynchronousCommand>
+      </RunSynchronous>
+    </component>
+-->
+
+  </settings> <!-- pass="specialize" -->
+
+  <settings pass="oobeSystem">
+
+    <component name="Microsoft-Windows-International-Core"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+        <InputLocale>en-US</InputLocale>
+        <SystemLocale>en-US</SystemLocale>
+        <UILanguage>en-US</UILanguage>
+        <UserLocale>en-US</UserLocale>
+    </component>
+
+    <component name="Microsoft-Windows-Shell-Setup"
+      processorArchitecture="amd64"
+      publicKeyToken="31bf3856ad364e35"
+      language="neutral"
+      versionScope="nonSxS">
+
+      <OOBE>
+        <HideEULAPage>true</HideEULAPage>
+        <ProtectYourPC>3</ProtectYourPC>
+        <NetworkLocation>Work</NetworkLocation>
+        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+<!--
+        <SkipMachineOOBE>true</SkipMachineOOBE>
+        <SkipUserOOBE>true</SkipUserOOBE>
+-->
+      </OOBE>
+
+<!--
+      <UserAccounts>
+        <AdministratorPassword>
+          <Value>Passw0rd</Value>
+          <PlainText>true</PlainText>
+        </AdministratorPassword>
+      </UserAccounts>
+-->
+      <AutoLogon>
+<!--
+        <Password>
+          <Value>Passw0rd</Value>
+          <PlainText>true</PlainText>
+        </Password>
+        <LogonCount>50</LogonCount>
+-->
+        <Enabled>true</Enabled>
+        <Username>Administrator</Username>
+      </AutoLogon>
+<!--
+      <FirstLogonCommands>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>msiexec /i c:\windows\temp\cloudbase.msi /qb /l*v c:\windows\temp\cloudbase.log LOGGINGSERIALPORTNAME=COM1</CommandLine>
+          <Order>1</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>c:\windows\system32\sysprep\sysprep /generalize /oobe /shutdown</CommandLine>
+          <Order>2</Order>
+        </SynchronousCommand>
+      </FirstLogonCommands>
+-->
+    </component>
+
+  </settings> <!-- pass="oobeSystem" -->
+
+</unattend>

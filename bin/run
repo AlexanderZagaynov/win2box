@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# project directory
+cd "$PWD/$0/../.." && DIR=$PWD && cd - > /dev/null
+
+# help dirs
+mkdir -p "$PWD/tmp"
+mkdir -p "$PWD/iso"
+
+# params
+VM='win2box'
+BOX_DIR=$DIR/tmp
+HDD_FILE=$BOX_DIR/$VM/$VM.vdi
+WIN_ISO=$DIR/iso/'15063.0.170317-1834.RS2_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO'
+VBOX_ISO='/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso'
+CONFIG_DIR=$DIR/config
+CONFIG_ISO=$DIR/iso/config.iso
+
+# check if vm exists
+if VBoxManage showvminfo "$VM" &> /dev/null; then
+  # echo "VBox named $VM exists. Please remove it completely first."
+  # exit 1
+  VBoxManage unregistervm --delete "$VM"
+fi
+
+# prepare config ISO
+mkisofs -J -r -o "$CONFIG_ISO" "$CONFIG_DIR"
+
+# create vm
+VBoxManage createvm                    \
+  --name "$VM" --basefolder "$BOX_DIR" \
+  --ostype "Windows10_64"              \
+  --register                           \
+;
+
+# use single SATA controller for all drives
+VBoxManage storagectl "$VM"         \
+  --name "SATA Controller"          \
+  --add sata --controller IntelAHCI \
+  --portcount 4                     \
+;
+
+# hard drive
+VBoxManage createhd --filename "$HDD_FILE" --size 32768
+VBoxManage storageattach "$VM"    \
+  --storagectl "SATA Controller"  \
+  --port 0 --device 0 --type hdd  \
+  --medium "$HDD_FILE"            \
+;
+
+# primary ISO
+VBoxManage storageattach "$VM"        \
+  --storagectl "SATA Controller"      \
+  --port 1 --device 0 --type dvddrive \
+  --medium "$WIN_ISO"                 \
+;
+
+# config ISO
+VBoxManage storageattach "$VM"        \
+  --storagectl "SATA Controller"      \
+  --port 2 --device 0 --type dvddrive \
+  --medium "$CONFIG_ISO"              \
+;
+
+# VirtualBox Guest Additions (drivers)
+VBoxManage storageattach "$VM"        \
+  --storagectl "SATA Controller"      \
+  --port 3 --device 0 --type dvddrive \
+  --medium "$VBOX_ISO"                \
+;
+
+# general configs
+VBoxManage modifyvm "$VM"                            \
+  --ioapic on --audio none --clipboard bidirectional \
+  --boot1 dvd --boot2 disk --boot3 none --boot4 none \
+  --memory 2048 --vram 16                            \
+;
+
+# VBoxManage modifyvm $VM --nic1 bridged --bridgeadapter1 e1000g0
+# VBoxHeadless -s $VM # --startvm
+VBoxManage startvm "$VM"
