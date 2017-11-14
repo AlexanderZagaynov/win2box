@@ -32,6 +32,7 @@
     </component>
 
     <!-- drivers -->
+<!--
     <component name="Microsoft-Windows-PnpCustomizationsWinPE"
                publicKeyToken="31bf3856ad364e35"
                language="neutral"
@@ -43,6 +44,7 @@
         </PathAndCredentials>
       </DriverPaths>
     </component>
+-->
 
     <component name="Microsoft-Windows-Setup"
                publicKeyToken="31bf3856ad364e35"
@@ -150,20 +152,20 @@
 -->
 
 <!--
-for %%i in (%~dp0\vbox_*.cer) do certutil -addstore -f "TrustedPublisher" %%i
-VBoxCertUtil.exe add-trusted-publisher vbox*.cer -\-root vbox*.cer
-for %i in (f:\cert\vbox-*.cer) do f:\cert\VBoxCertUtil.exe add-trusted-publisher %i -\-root %i
-VBoxWindowsAdditions.exe /with_autologon /with_d3d /with_wddm /I /S
 https://www.microsoft.com/store/apps/9nblggh4tx22
 -->
 
-<!--
     <component name="Microsoft-Windows-Deployment"
                processorArchitecture="amd64"
                publicKeyToken="31bf3856ad364e35"
                language="neutral"
                versionScope="nonSxS">
       <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+          <Order>1</Order>
+          <Path>e:\guest_additions.bat</Path>
+        </RunSynchronousCommand>
+<!--
         <RunSynchronousCommand wcm:action="add">
           <Credentials>
              <Username>Administrator</Username>
@@ -185,9 +187,9 @@ https://www.microsoft.com/store/apps/9nblggh4tx22
           <Order>5</Order>
           <Path>powershell -NoLogo -Command "(new-object System.Net.WebClient).DownloadFile('https://www.cloudbase.it/downloads/CloudbaseInitSetup_Beta_x64.msi', 'c:\Windows\Temp\cloudbase.msi')"</Path>
         </RunSynchronousCommand>
+-->
       </RunSynchronous>
     </component>
--->
 
   </settings> <!-- pass="specialize" -->
 
