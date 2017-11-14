@@ -4,8 +4,8 @@
 cd "$PWD/$0/../.." && export DIR=$PWD && cd - > /dev/null
 
 # help dirs
-mkdir -p "$PWD/tmp"
-mkdir -p "$PWD/iso"
+mkdir -p "$DIR/tmp"
+mkdir -p "$DIR/iso"
 
 # params
 export VM='win2box'
