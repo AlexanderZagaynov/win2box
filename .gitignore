@@ -6,3 +6,6 @@
 
 # OSX shit
 .DS_Store
+
+# Ansible shit
+*.retry

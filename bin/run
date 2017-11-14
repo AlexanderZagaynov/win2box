@@ -70,9 +70,11 @@ VBoxManage storageattach "$VM"        \
 ;
 
 # general configs
+# TODO: own manageable host only (or bridge?) networking
 VBoxManage modifyvm "$VM"                            \
   --ioapic on --audio none --clipboard bidirectional \
   --boot1 dvd --boot2 disk --boot3 none --boot4 none \
+  --nic1 hostonly --hostonlyadapter1 vboxnet0        \
   --memory 2048 --vram 16                            \
 ;
 

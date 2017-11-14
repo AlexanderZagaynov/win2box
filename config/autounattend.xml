@@ -108,15 +108,16 @@
 
   <settings pass="specialize">
 
+    <!-- random name -->
+<!--
     <component name="Microsoft-Windows-Shell-Setup"
                publicKeyToken="31bf3856ad364e35"
                language="neutral"
                versionScope="nonSxS"
                processorArchitecture="amd64">
-      <ComputerName>*</ComputerName> <!-- random name -->
+      <ComputerName>*</ComputerName>
     </component>
 
-<!--
     <component name="Microsoft-Windows-TerminalServices-LocalSessionManager"
                processorArchitecture="amd64"
                publicKeyToken="31bf3856ad364e35"
@@ -151,15 +152,31 @@
 <!--
 for %%i in (%~dp0\vbox_*.cer) do certutil -addstore -f "TrustedPublisher" %%i
 VBoxCertUtil.exe add-trusted-publisher vbox*.cer -\-root vbox*.cer
-for %i in (vbox-*.cer) do VBoxCertUtil.exe add-trusted-publisher %i -\-root %i
+for %i in (f:\cert\vbox-*.cer) do f:\cert\VBoxCertUtil.exe add-trusted-publisher %i -\-root %i
 VBoxWindowsAdditions.exe /with_autologon /with_d3d /with_wddm /I /S
+https://www.microsoft.com/store/apps/9nblggh4tx22
+-->
 
+<!--
     <component name="Microsoft-Windows-Deployment"
                processorArchitecture="amd64"
                publicKeyToken="31bf3856ad364e35"
                language="neutral"
                versionScope="nonSxS">
       <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+          <Credentials>
+             <Username>Administrator</Username>
+             <Password>Pa55w0rd</Password>
+          </Credentials>
+          <Order>1</Order>
+          <Path>
+            powershell.exe -NoLogo -NonInteractive -NoProfile
+                           -ExecutionPolicy Unrestricted
+                           -File "e:\ConfigureRemotingForAnsible.ps1"
+                           -Verbose -SkipNetworkProfileCheck
+          </Path>
+        </RunSynchronousCommand>
         <RunSynchronousCommand wcm:action="add">
           <Order>3</Order>
           <Path>netsh advfirewall firewall add rule name=ICMP protocol=icmpv4 dir=in action=allow</Path>
@@ -188,43 +205,47 @@ VBoxWindowsAdditions.exe /with_autologon /with_d3d /with_wddm /I /S
     </component>
 
     <component name="Microsoft-Windows-Shell-Setup"
-      processorArchitecture="amd64"
-      publicKeyToken="31bf3856ad364e35"
-      language="neutral"
-      versionScope="nonSxS">
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
 
       <OOBE>
         <HideEULAPage>true</HideEULAPage>
-        <ProtectYourPC>3</ProtectYourPC>
+        <ProtectYourPC>1</ProtectYourPC>
         <NetworkLocation>Work</NetworkLocation>
         <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
 <!--
+        <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+        <HideLocalAccountScreen>true</HideLocalAccountScreen>
         <SkipMachineOOBE>true</SkipMachineOOBE>
         <SkipUserOOBE>true</SkipUserOOBE>
 -->
       </OOBE>
 
-<!--
       <UserAccounts>
         <AdministratorPassword>
-          <Value>Passw0rd</Value>
+          <Value>Pa55w0rd</Value>
           <PlainText>true</PlainText>
         </AdministratorPassword>
       </UserAccounts>
--->
+
       <AutoLogon>
-<!--
         <Password>
-          <Value>Passw0rd</Value>
+          <Value>Pa55w0rd</Value>
           <PlainText>true</PlainText>
         </Password>
-        <LogonCount>50</LogonCount>
--->
+        <!-- <LogonCount>50</LogonCount> -->
         <Enabled>true</Enabled>
         <Username>Administrator</Username>
       </AutoLogon>
-<!--
+
       <FirstLogonCommands>
+        <SynchronousCommand wcm:action="add">
+          <Order>1</Order>
+          <CommandLine>powershell.exe -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -File "e:\ConfigureRemotingForAnsible.ps1" -Verbose -SkipNetworkProfileCheck</CommandLine>
+        </SynchronousCommand>
+<!--
         <SynchronousCommand wcm:action="add">
           <CommandLine>msiexec /i c:\windows\temp\cloudbase.msi /qb /l*v c:\windows\temp\cloudbase.log LOGGINGSERIALPORTNAME=COM1</CommandLine>
           <Order>1</Order>
@@ -233,8 +254,8 @@ VBoxWindowsAdditions.exe /with_autologon /with_d3d /with_wddm /I /S
           <CommandLine>c:\windows\system32\sysprep\sysprep /generalize /oobe /shutdown</CommandLine>
           <Order>2</Order>
         </SynchronousCommand>
-      </FirstLogonCommands>
 -->
+      </FirstLogonCommands>
     </component>
 
   </settings> <!-- pass="oobeSystem" -->
