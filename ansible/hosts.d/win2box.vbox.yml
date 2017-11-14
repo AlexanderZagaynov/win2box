@@ -1,3 +1,6 @@
+# simple_config_file:
+#   plugin: virtualbox
+#   groups: windows
 windows:
   hosts:
     '192.168.99.100':

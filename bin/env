@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# project directory
+cd "$PWD/$0/../.." && export DIR=$PWD && cd - > /dev/null
+
+# help dirs
+mkdir -p "$PWD/tmp"
+mkdir -p "$PWD/iso"
+
+# params
+export VM='win2box'
+export BOX_DIR=$DIR/tmp
+export HDD_FILE=$BOX_DIR/$VM/$VM.vdi
+export WIN_ISO=$DIR/iso/'15063.0.170317-1834.RS2_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO'
+export VBOX_ISO='/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso'
+export CONFIG_DIR=$DIR/config
+export CONFIG_ISO=$DIR/iso/config.iso
+
+# ansible configs
+export ANSIBLE_INVENTORY=$DIR/ansible/hosts
+
+# http://sealiesoftware.com/blog/archive/2017/6/5/Objective-C_and_fork_in_macOS_1013.html
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES # OSX High Sierra issue workaround

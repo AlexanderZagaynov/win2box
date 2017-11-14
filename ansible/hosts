@@ -1,0 +1,20 @@
+#!/bin/bash
+source "$0/../../bin/env"
+
+BOX_IP=$(VBoxManage guestproperty get "$VM" \
+         "/VirtualBox/GuestInfo/Net/0/V4/IP" \
+         | sed 's/Value: //')
+
+# cat << EOF
+# {
+#   "_meta": { "hostvars": { "$VM": { "ansible_host": "$BOX_IP" } } },
+#   "windows": { "hosts": ["$VM"] }
+# }
+# EOF
+
+cat << EOF
+{
+  "_meta": { "hostvars": {} },
+  "windows": { "hosts": ["$BOX_IP"] }
+}
+EOF

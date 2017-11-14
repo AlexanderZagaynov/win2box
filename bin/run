@@ -1,20 +1,5 @@
 #!/bin/bash
-
-# project directory
-cd "$PWD/$0/../.." && DIR=$PWD && cd - > /dev/null
-
-# help dirs
-mkdir -p "$PWD/tmp"
-mkdir -p "$PWD/iso"
-
-# params
-VM='win2box'
-BOX_DIR=$DIR/tmp
-HDD_FILE=$BOX_DIR/$VM/$VM.vdi
-WIN_ISO=$DIR/iso/'15063.0.170317-1834.RS2_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO'
-VBOX_ISO='/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso'
-CONFIG_DIR=$DIR/config
-CONFIG_ISO=$DIR/iso/config.iso
+source "$0/../env"
 
 # check if vm exists
 if VBoxManage showvminfo "$VM" &> /dev/null; then
@@ -75,7 +60,7 @@ VBoxManage modifyvm "$VM"                            \
   --ioapic on --audio none --clipboard bidirectional \
   --boot1 dvd --boot2 disk --boot3 none --boot4 none \
   --nic1 hostonly --hostonlyadapter1 vboxnet0        \
-  --memory 2048 --vram 16                            \
+  --memory 2048 --vram 32                            \
 ;
 
 # VBoxManage modifyvm $VM --nic1 bridged --bridgeadapter1 e1000g0
